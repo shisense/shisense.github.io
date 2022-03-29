@@ -74,17 +74,81 @@
 
         <div class="w3-row w3-padding-64">
             <div class="w3-twothird w3-container">
-                <h1 class="w3-text-teal">Introduction</h1>
+                <h1 class="w3-text-teal">SQL Server Jobs</h1>
+
+                <p>
+                    This job downloads a Canada population data file from StatsCan website
+                    (a source of open data), then uploads it to staging tables in SQL server.
+                    This job also optionally validates and transforms the data,
+                    making it ready for promoting into operational data, on which Data analysis
+                    programs analyze.
+
+                </p>
+                <p>
+                    This job is deployed as a SQL Server job. for creating and managing SQL Server
+                    jobs, refer to my SQL Server Jobs project.
+                </p>
+                <p>
+                    The code structure of this app
+                </p>
+                <img src="images/job171_stru.png">
 
 
-                <p>this site is a list of my experimental projects.</p>
+                <p>
+                    Notes:
+                <ul>
+                    <li>
+                        The entry of this job is a Windows command script, but it calls other Windows
+                        command files, BCP and SQLCMD utilities, and powershells script as its sub-routines.
+                    </li>
+                    <li>
+                        cmd_171.cmd is the main entry point. it is different running from
+                        Windows Command Window and running from SQL Server job. First the
+                        running principal is the Agent account when running from SQL server
+                        agent while running from Windows Command line it is the log-in user,
+                        or admin if Command Line is started with Run As Admin. Secondly, the
+                        default working directory is often the application folder so the
+                        relative path in code works. when SQL Server Agent runs it, the working
+                        directory is not the application directory. So the job code requires
+                        using absolute path. The solution is creating a context variable of
+                        the path of the running main entry file <b>set mypath=%~dp0</b> and use
+                        it in all script. A powershell sub-routine gets the context variable
+                        by <b>${env:mypath}</b> (see it in download_file.ps1)
 
+                    </li>
+                    <li>
+                        running powershell sub-routine from SQL Server Agent requires a permission.
+                        Run Windows Command with Run as administrator, execute <b>"Set-ExecutionPolicy
+                            RemoteSigned Process"</b> (check get-help set-executionpolicy, and
+                        Get-ExecutionPolicy -list) Reference:
+                        https://www.sharepointdiary.com/2014/03/fix-for-powershell-script-cannot-be-loaded-because-running-scripts-is-disabled-on-this-system.html#ixzz7Oh15hRsH"
+
+
+                    </li>
+                    <li>
+
+                        Credentials are stored in enviroment variables (see set-env.cmd) so the script files can use
+                        without
+                        exposing them.
+                    </li>
+
+                    <li>
+                        each run creates a log file saved in the <b>log_files</b> folder, each file is
+                        named with a timestamp.
+                    </li>
+                    <li>
+                        downloaded files are saved in <b>data_files</b> folder.
+                    </li>
+                </ul>
+                </p>
 
             </div>
             <div class="w3-third w3-container">
-                <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
+                <p class="w3-border w3-padding-large w3-padding-32 w3-center">#Tags</p>
                 <div class="w3-border w3-padding-large w3-padding-64 w3-center">
+                   
                     #Tags
+    
                 </div>
             </div>
         </div>
@@ -96,20 +160,15 @@
 
 
         <footer id="myFooter" class="w3-bottom">
-
             <!--
             <div class="w3-container w3-theme-l2 w3-padding-32">
                 <h4>Footer</h4>
             </div>
-
-
-
+  
+          
             <div class="w3-container w3-theme-l1">
                 <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
-            </div>
-
-            -->
-
+            </div>-->
         </footer>
 
         <!-- END MAIN -->
